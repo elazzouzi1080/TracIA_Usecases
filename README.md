@@ -1,174 +1,120 @@
-# TracIA Usecases – Pipeline de classification pour l'insuffisance cardiaque
+# 🧪 TracIA Usecases — Pipeline ML (Heart Failure Dataset)
 
-Ce dépôt rassemble un cas d'usage complet de modélisation prédictive appliqué au **Heart Failure Clinical Records Dataset**. Il inclut des données pré-séparées, un pipeline Python reproductible, ainsi que des notebooks exploratoires pour préparer les splits et exécuter la validation croisée sur plusieurs algorithmes de machine learning.
-
----
-
-## 🎯 Objectifs
-
-- Comparer différentes familles de modèles (Régression Logistique, SVM, Forêts Aléatoires, MLP, etc.).
-- Utiliser des **splits de validation croisée fixes** (k=5) afin de garantir la reproductibilité.
-- Calculer un large panel de métriques (AUC-ROC, F1, MCC, Brier Score, Sensibilité, Spécificité, etc.) avec intervalles de confiance.
-- Générer automatiquement des exports (CSV/JSON/Excel) et des visualisations (boxplots, comparatifs de modèles, courbes ROC).
+Ce dépôt présente un **pipeline reproductible** d’expérimentation machine learning appliqué à un dataset médical de référence : le *Heart Failure Clinical Records Dataset*.  
+L’objectif est de fournir un exemple simple, transparent et traçable pour comparer plusieurs modèles de classification binaire.
 
 ---
 
-## 🗂️ Structure du dépôt
+## ⚙️ Étape 1. Contexte général
+- **Projet** : démonstration de cas d’usage pour le projet **TracIA** (traçabilité & IA en santé).  
+- **But** : tester et comparer différents modèles de machine learning (LogReg, SVM, RF, MLP, etc.) dans un cadre reproductible.  
+- **Méthode clé** : utilisation de *splits fixes* (5-fold cross-validation déterministe) afin que tous les partenaires puissent évaluer leurs méthodes sur les **mêmes conditions de validation**.
 
+---
+
+## 📊 Étape 2. Dataset utilisé
+
+**Nom** : Heart Failure Clinical Records Dataset  
+**Source** : [UCI ML Repository](https://archive.ics.uci.edu/ml/datasets/Heart+failure+clinical+records)  
+**Taille** : 299 patients (105 femmes, 194 hommes), âge 40–95 ans  
+**Contexte** : patients suivis au Faisalabad Institute of Cardiology & Allied Hospital (Pakistan, 2015)  
+**Cible** : `DEATH_EVENT` (0 = survie, 1 = décès)  
+
+**Variables principales :**
+- Données démographiques : `age`, `sex`, `smoking`  
+- Facteurs cliniques : `anaemia`, `diabetes`, `high_blood_pressure`  
+- Examens biologiques : `serum_creatinine`, `serum_sodium`, `platelets`, `creatinine_phosphokinase`  
+- Mesure cardiaque clé : `ejection_fraction` (%)  
+- Durée de suivi : `time` (jours)  
+
+**Classes :**
+- 203 survivants (≈ 68 %)  
+- 96 décès (≈ 32 %)  
+
+> ⚠️ Dataset petit, monocentrique et déséquilibré, mais idéal pour démonstration et benchmark.
+
+---
+
+## 📒 Étape 3. Notebook 1 — Préparation des splits et configuration
+**Fichier** : `01_prepare_splits_and_config.ipynb`  
+
+Ce notebook permet de :
+- Charger le dataset brut  
+- Ajouter un identifiant unique `row_id`  
+- Générer des **splits fixes stratifiés (k=5)** avec graine aléatoire déterministe  
+- Sauvegarder les fichiers nécessaires dans `data/splits_k5_v1/` :  
+  - `manifest.json` (métadonnées : cible, features, taille des splits, etc.)  
+  - `train_ids_fold*.csv` et `test_ids_fold*.csv`  
+
+> Ces splits seront réutilisés pour tous les entraînements afin d’assurer la comparabilité des résultats.
+
+---
+
+## 🖥️ Étape 4. Script — Exécution du pipeline complet
+**Fichier** : `fixed_cv_binary_classification.py`  
+
+Ce script exécute automatiquement :
+1. Chargement du dataset + splits fixes  
+2. Entraînement de plusieurs modèles classiques (LogReg, SVM, RF, MLP…)  
+3. Évaluation sur chaque fold avec un ensemble de métriques :  
+   - AUC-ROC, AUC-PR, MCC, Brier, ACC, F1, SE, SP, PPV, NPV  
+4. Sauvegarde des résultats dans `results_pipline/` :
+   - Résultats par fold (`cv_results_per_fold.csv/json`)  
+   - Résumé global (`cv_results_summary.csv/json`)  
+   - Excel complet (`cv_results_complete.xlsx`)  
+   - Tests statistiques (Wilcoxon pairwise sur AUC-ROC)  
+   - Figures de comparaison (`figures/model_comparison_*.png`)  
+
+---
+
+## 📒 Étape 5. Notebook 2 — Exécution interactive
+**Fichier** : `02_run_binary_classification_pipeline.ipynb`  
+
+Ce notebook reprend les étapes du script mais en version **pas-à-pas** et interactive, permettant de :
+- Explorer les splits et vérifier les données  
+- Lancer manuellement l’entraînement des modèles  
+- Visualiser les résultats et figures dans Jupyter  
+
+---
+
+## 📂 Étape 6. Arborescence du dépôt
 ```
-TracIA_Usecases/
-├── README.md
-└── use_cases/
-    ├── data/
-    │   ├── heart_failure_clinical_records_dataset.csv
-    │   └── splits_k5_v1/          # Manifest + IDs train/test par fold
-    ├── notebooks_usecases/
-    │   ├── 01_prepare_splits_and_config.ipynb
-    │   ├── 02_run_binary_classification_pipeline.ipynb
-    │   ├── fixed_cv_binary_classification.py
-    │   ├── README.md               # Guide spécifique aux notebooks
-    │   └── requirements.txt
-    └── results_pipline/
-        ├── cv_results_per_fold.csv / .json
-        ├── cv_results_summary.csv / .json
-        ├── cv_results_complete.xlsx
-        ├── statistical_tests.csv
-        └── figures/
-            ├── model_comparison_AUC_ROC.png
-            ├── model_comparison_F1.png
-            └── model_comparison_MCC.png
+use_cases/
+├─ data/
+│  ├─ heart_failure_clinical_records_dataset.csv
+│  └─ splits_k5_v1/
+│     ├─ manifest.json
+│     ├─ train_ids_fold*.csv
+│     └─ test_ids_fold*.csv
+├─ notebooks_usecases/
+│  ├─ fixed_cv_binary_classification.py
+│  ├─ 01_prepare_splits_and_config.ipynb
+│  ├─ 02_run_binary_classification_pipeline.ipynb
+│  └─ requirements.txt
+└─ results_pipline/
+   ├─ cv_results_per_fold.*
+   ├─ cv_results_summary.*
+   ├─ cv_results_complete.xlsx
+   ├─ statistical_tests.csv
+   └─ figures/
 ```
 
 ---
 
-## ⚙️ Installation rapide
-
-1. **Cloner le dépôt depuis GitHub**
-   ```bash
-   git clone https://github.com/<organisation>/TracIA_Usecases.git
-   cd TracIA_Usecases/use_cases/notebooks_usecases
-   ```
-
-   > Remplacez `<organisation>` par le nom du compte ou de l'organisation GitHub qui héberge le dépôt.
-
-2. **Créer un environnement virtuel (optionnel mais recommandé)**
-   ```bash
-   python -m venv .venv
-   source .venv/bin/activate      # Sous Windows : .venv\\Scripts\\activate
-   ```
-
-3. **Installer les dépendances**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
----
-
-## ▶️ Lancement du pipeline Python
-
-Exécuter le script principal (depuis `use_cases/notebooks_usecases/`) :
-
+## 🚀 Étape 7. Installation & lancement
 ```bash
+# Cloner le dépôt
+git clone https://github.com/elazzouzi1080/TracIA_Usecases.git
+cd TracIA_Usecases/use_cases/notebooks_usecases
+
+# Créer un venv (optionnel)
+python -m venv .venv
+source .venv/bin/activate  # Linux/Mac
+# .venv\Scripts\activate   # Windows
+
+# Installer dépendances
+pip install -r requirements.txt
+
+# Lancer le pipeline complet
 python fixed_cv_binary_classification.py
 ```
-
-Le pipeline :
-- charge le dataset enrichi d'un `row_id`,
-- applique les splits fixes définis dans `data/splits_k5_v1/`,
-- entraîne chaque modèle sur les 5 folds,
-- calcule toutes les métriques et intervalles de confiance,
-- enregistre les résultats et figures dans `use_cases/results_pipline/`,
-- lance un test statistique (Wilcoxon) pour comparer les modèles deux à deux sur l'AUC-ROC.
-
----
-
-## 📓 Notebooks disponibles
-
-- **01_prepare_splits_and_config.ipynb** : génération / inspection des splits et de la configuration.
-- **02_run_binary_classification_pipeline.ipynb** : exécution pas-à-pas du pipeline, idéal pour expérimenter ou visualiser l'avancement.
-
-Ces notebooks peuvent être ouverts dans JupyterLab/Notebook après activation de l'environnement et installation des dépendances.
-
----
-
-## 🧾 Données et splits
-
-- `data/heart_failure_clinical_records_dataset.csv` : dataset original (299 patients, 12 variables cliniques + `DEATH_EVENT`).
-- `data/splits_k5_v1/manifest.json` : métadonnées des splits (k=5, cible `DEATH_EVENT`, liste des features, taille des ensembles).
-- `train_ids_foldX.csv` / `test_ids_foldX.csv` : identifiants de lignes (colonne `row_id`) assignés à chaque fold.
-
-> **Important :** les splits sont **stratifiés** et **déterministes** (`random_state=42`) pour assurer la comparabilité des résultats.
-
----
-
-## 📊 Résultats générés
-
-| Fichier | Contenu |
-| ------- | ------- |
-| `cv_results_per_fold.csv/json` | Toutes les métriques pour chaque modèle et chaque fold. |
-| `cv_results_summary.csv/json`  | Moyennes, médianes, écarts-types et intervalles de confiance par modèle. |
-| `cv_results_complete.xlsx`     | Fichier Excel avec feuilles “Per Fold Results”, “Summary” et “Metadata”. |
-| `statistical_tests.csv`        | Résultats des tests de Wilcoxon (significativité pairwise sur l'AUC-ROC). |
-| `figures/model_comparison_*.png` | Boxplots comparatifs (AUC-ROC, F1, MCC). |
-
----
-
-## 🛠️ Personnalisation
-
-- **Paramètres globaux** : la classe `Config` (dans `fixed_cv_binary_classification.py`) centralise les chemins, métriques suivies, taille des figures, etc.
-- **Modèles** : la `ModelFactory` regroupe la définition des algorithmes évalués. Ajoutez vos propres modèles dans le dictionnaire `models`.
-- **Seuils / Métrologie** : adaptez `MetricsCalculator` pour modifier le seuil de décision ou enrichir les métriques.
-- **Splits** : placez vos propres fichiers `train_ids_fold*.csv` / `test_ids_fold*.csv` dans `data/splits_k5_v1/` et mettez à jour `manifest.json`.
-
----
-
-## 📚 Références
-
-- **Dataset** : [Heart Failure Clinical Records (UCI Machine Learning Repository)](https://archive.ics.uci.edu/dataset/519/heart+failure+clinical+records)
-- **Bibliothèques principales** : `scikit-learn`, `pandas`, `numpy`, `seaborn`, `matplotlib`, `tqdm`, `scipy`.
-
----
-
-## 📄 Licence
-
-La licence n'est pas spécifiée dans le dépôt. Ajoutez un fichier `LICENSE` si nécessaire pour clarifier les droits d'usage.
-
----
-
-## 🤝 Contribution
-
-1. Forker le dépôt.
-2. Cloner votre fork et créer une branche de fonctionnalité :
-   ```bash
-   git clone https://github.com/<votre-compte>/TracIA_Usecases.git
-   cd TracIA_Usecases
-   git checkout -b feature/ma-fonctionnalite
-   ```
-3. Commiter vos changements et ouvrir une Pull Request.
-
----
-
-## 📬 Contact
-
-Pour toute question ou suggestion, ouvrez une issue GitHub ou contactez l'équipe TracIA.
-
----
-
-## ✅ Récapitulatif rapide des commandes Git utiles
-
-```bash
-# Cloner le dépôt principal
-git clone https://github.com/<organisation>/TracIA_Usecases.git
-
-# Mettre à jour votre copie locale
-cd TracIA_Usecases
-git pull origin main
-
-# Ajouter un dépôt distant pointant vers votre fork
-git remote add fork https://github.com/<votre-compte>/TracIA_Usecases.git
-
-# Pousser votre branche de travail vers votre fork
-git push fork feature/ma-fonctionnalite
-```
-
-Ces commandes permettent de récupérer le code du dépôt GitHub, de le mettre à jour régulièrement et de partager vos modifications via un fork ou une Pull Request.
