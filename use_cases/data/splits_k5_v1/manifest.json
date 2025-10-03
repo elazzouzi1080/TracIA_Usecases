@@ -1,0 +1,58 @@
+{
+  "name": "Fixed Stratified K-Fold Splits",
+  "k": 5,
+  "random_state": 42,
+  "target": "DEATH_EVENT",
+  "features": [
+    "age",
+    "anaemia",
+    "creatinine_phosphokinase",
+    "diabetes",
+    "ejection_fraction",
+    "high_blood_pressure",
+    "platelets",
+    "serum_creatinine",
+    "serum_sodium",
+    "sex",
+    "smoking",
+    "time"
+  ],
+  "rows": 299,
+  "splits": [
+    {
+      "fold": 1,
+      "train_file": "train_ids_fold1.csv",
+      "test_file": "test_ids_fold1.csv",
+      "n_train": 239,
+      "n_test": 60
+    },
+    {
+      "fold": 2,
+      "train_file": "train_ids_fold2.csv",
+      "test_file": "test_ids_fold2.csv",
+      "n_train": 239,
+      "n_test": 60
+    },
+    {
+      "fold": 3,
+      "train_file": "train_ids_fold3.csv",
+      "test_file": "test_ids_fold3.csv",
+      "n_train": 239,
+      "n_test": 60
+    },
+    {
+      "fold": 4,
+      "train_file": "train_ids_fold4.csv",
+      "test_file": "test_ids_fold4.csv",
+      "n_train": 239,
+      "n_test": 60
+    },
+    {
+      "fold": 5,
+      "train_file": "train_ids_fold5.csv",
+      "test_file": "test_ids_fold5.csv",
+      "n_train": 240,
+      "n_test": 59
+    }
+  ]
+}
