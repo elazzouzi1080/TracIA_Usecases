@@ -1,7 +1,7 @@
 """
 Binary Classification with Fixed Cross-Validation Pipeline - 
 
-This notebook provides a robust, modular pipeline for evaluating multiple baseline 
+This script provides a robust, modular pipeline for evaluating multiple baseline 
 classifiers on the Heart Failure Clinical Records dataset using fixed stratified 
 k-fold cross-validation splits.
 
