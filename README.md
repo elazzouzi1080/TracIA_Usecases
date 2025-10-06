@@ -161,7 +161,6 @@ class Config:
 - `cv_results_per_fold.csv`: Fold-by-fold metrics  
 - `cv_results_summary.csv`: Mean, std, median, CI  
 - `cv_results_complete.xlsx`: Multi-sheet workbook with metadata  
-- `statistical_tests.csv`: Wilcoxon test results  
 
 ### Visualizations
 - `model_comparison_*.png`: Box plots per metric  
