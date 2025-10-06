@@ -1,4 +1,4 @@
-# Binary Classification Pipeline with Fixed Cross-Validation
+# 🧪 Binary Classification Pipeline with Fixed Cross-Validation
 
 A robust, reproducible machine learning pipeline for binary classification tasks using stratified k-fold cross-validation with fixed splits.
 
