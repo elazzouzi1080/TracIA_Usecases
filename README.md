@@ -2,6 +2,12 @@
 
 A robust, reproducible machine learning pipeline for binary classification tasks using stratified k-fold cross-validation with fixed splits.
 
+## To enable all partners to work under identical and comparable conditions, a complete experimental environment has been defined. This environment relies on a single dataset, fixed cross-validation splits, a centralized configuration file, and a reference classification pipeline.
+The objective is twofold:
+•	Ensure reproducibility of results, regardless of technical environments or preprocessing applied;
+•	Provide a common basis for comparison to assess the impact of the studied approaches (watermarking, anonymization, RTAB, etc.).
+All these files allow each partner to reproduce the results and fairly compare the methods.
+
 ---
 
 ## 📋 Overview
