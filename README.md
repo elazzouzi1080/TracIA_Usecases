@@ -187,5 +187,6 @@ TOP 5 MODELS BY AUC-ROC
   SVM_rbf       0.860661       0.031572      0.678865  0.550067
 ================================================================================
 ```
+<img width="1200" height="800" alt="image" src="https://github.com/user-attachments/assets/eb4e8aa5-156c-470f-98bb-7715cf33ddab" />
 
 ---
