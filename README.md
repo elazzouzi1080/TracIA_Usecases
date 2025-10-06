@@ -39,7 +39,7 @@ This pipeline provides a complete framework for evaluating multiple baseline cla
 ```
 
 ---
-## Dataset utilisé
+## 📊 Dataset utilisé
 
 **Nom** : Heart Failure Clinical Records Dataset  
 **Source** : [UCI ML Repository](https://archive.ics.uci.edu/ml/datasets/Heart+failure+clinical+records)  
