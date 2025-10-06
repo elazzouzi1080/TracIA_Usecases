@@ -12,7 +12,6 @@ This pipeline provides a complete framework for evaluating multiple baseline cla
 - ✅ **Fixed CV Splits**: Ensures reproducibility across experiments  
 - ✅ **Multiple Baselines**: 9 pre-configured classifiers (LR, SVM, RF, etc.)  
 - ✅ **Comprehensive Metrics**: 11 evaluation metrics including AUC-ROC, F1, MCC  
-- ✅ **Statistical Testing**: Pairwise Wilcoxon signed-rank tests  
 - ✅ **Rich Visualizations**: Box plots, ROC curves, confidence intervals  
 - ✅ **Multiple Export Formats**: CSV, JSON, Excel with metadata  
 
@@ -24,7 +23,6 @@ This pipeline provides a complete framework for evaluating multiple baseline cla
 ├── notebooks/
 │   ├── 01_prepare_splits_and_config.ipynb      # One-time split creation
 │   └── 02_run_binary_classification_pipeline.ipynb  # Main evaluation
-├── src/
 │   └── fixed_cv_binary_classification.py       # Core pipeline code
 ├── data/
 │   └── splits_k5_v1/
@@ -41,7 +39,25 @@ This pipeline provides a complete framework for evaluating multiple baseline cla
 ```
 
 ---
+## Dataset utilisé
 
+**Nom** : Heart Failure Clinical Records Dataset  
+**Source** : [UCI ML Repository](https://archive.ics.uci.edu/ml/datasets/Heart+failure+clinical+records)  
+**Taille** : 299 patients (105 femmes, 194 hommes), âge 40–95 ans  
+**Contexte** : patients suivis au Faisalabad Institute of Cardiology & Allied Hospital (Pakistan, 2015)  
+**Cible** : `DEATH_EVENT` (0 = survie, 1 = décès)  
+
+**Variables principales :**
+- Données démographiques : `age`, `sex`, `smoking`  
+- Facteurs cliniques : `anaemia`, `diabetes`, `high_blood_pressure`  
+- Examens biologiques : `serum_creatinine`, `serum_sodium`, `platelets`, `creatinine_phosphokinase`  
+- Mesure cardiaque clé : `ejection_fraction` (%)  
+- Durée de suivi : `time` (jours)  
+
+**Classes :**
+- 203 survivants (≈ 68 %)  
+- 96 décès (≈ 32 %)  
+---
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -172,86 +188,3 @@ TOP 5 MODELS BY AUC-ROC
 ```
 
 ---
-
-## 🛠️ Advanced Usage
-
-### Custom Models
-```python
-from sklearn.ensemble import RandomForestClassifier
-
-custom_models = {
-    "RF_tuned": RandomForestClassifier(
-        n_estimators=200,
-        max_depth=15,
-        min_samples_split=10,
-        random_state=42
-    )
-}
-```
-
-### Extending Metrics
-```python
-from sklearn.metrics import log_loss
-metrics["LogLoss"] = log_loss(y_true, y_prob)
-```
-
----
-
-## ⚠️ Important Notes
-- Dataset **must include `row_id`** column  
-- Binary target only (2 classes)  
-- Handle missing values beforehand  
-- Large datasets may need high RAM  
-
----
-
-## 🐛 Troubleshooting
-
-| Issue | Solution |
-|-------|----------|
-| FileNotFoundError: Manifest not found | Run notebook 01 first |
-| ValueError: Train/test overlap | Regenerate splits |
-| RuntimeWarning: AUC-ROC | Check class imbalance |
-| Model crashes | Adjust `n_jobs` |
-
----
-
-## 📚 Citation
-
-```bibtex
-@misc{binary_cv_pipeline_2025,
-  title={Binary Classification Pipeline with Fixed Cross-Validation},
-  author={Your Name},
-  year={2025},
-  url={https://github.com/yourusername/project}
-}
-```
-
-Dataset reference:  
-> Chicco, D., & Jurman, G. (2020). *Machine learning can predict survival of patients with heart failure from serum creatinine and ejection fraction alone.* BMC Medical Informatics and Decision Making, 20(1), 16.
-
----
-
-## 📄 License
-Specify your license (MIT, Apache 2.0, etc.)
-
----
-
-## 🤝 Contributing
-- Fork the repository  
-- Create a feature branch  
-- Add tests for new functionality  
-- Submit a pull request  
-
----
-
-## 📧 Contact
-For questions or issues:  
-**your.email@domain.com**
-
----
-
-**Version**: 1.0.0  
-**Last Updated**: October 2025  
-**Python**: 3.8+  
-**Dependencies**: scikit-learn ≥ 1.0, pandas ≥ 1.3, numpy ≥ 1.21
