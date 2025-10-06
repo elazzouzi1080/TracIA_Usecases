@@ -163,8 +163,9 @@ class Config:
 - `cv_results_complete.xlsx`: Multi-sheet workbook with metadata  
 
 ### Visualizations
-- `model_comparison_*.png`: Box plots per metric  
-- `roc_curves.png`: ROC curves for all models  
+- `model_comparison_AUC_ROC.png`: AUC-ROC scores across models
+- `model_comparison_F1.png`: F1 scores across models
+- `model_comparison_MCC.png`: MCC scores across models
 
 ### JSON
 - `cv_results_per_fold.json`  
