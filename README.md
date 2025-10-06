@@ -1,6 +1,7 @@
 # 🧪 Binary Classification Pipeline with Fixed Cross-Validation
 
 A robust, reproducible machine learning pipeline for binary classification tasks using stratified k-fold cross-validation with fixed splits.
+ 
 ---
 To enable all partners to work under identical and comparable conditions, a complete experimental environment has been defined. This environment relies on a single dataset, fixed cross-validation splits, a centralized configuration file, and a reference classification pipeline.
 ---
