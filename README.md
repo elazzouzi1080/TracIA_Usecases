@@ -167,14 +167,6 @@ class Config:
 
 ---
 
-## 🔬 Reproducibility Guarantees
-- **Fixed Splits**: Stable row IDs for identical sets  
-- **Manifest Validation**: Automatic checks for integrity  
-- **Random Seeds**: Consistent `random_state`  
-- **Version Control**: Manifest tracks configuration  
-
----
-
 ## 📝 Example Results
 
 ```
