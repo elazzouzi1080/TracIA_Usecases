@@ -65,9 +65,12 @@ This pipeline provides a complete framework for evaluating multiple baseline cla
 pip install numpy pandas scikit-learn matplotlib seaborn tqdm scipy
 ```
 
-### Step 1: Prepare Fixed Splits (One-Time Setup)
-Run `01_prepare_splits_and_config.ipynb` to:
-1. Load your dataset  
+## Step 1: Prepare Fixed Splits (One-Time Setup) ✅ *Already Done*  
+
+The preparation of fixed splits has **already been executed**.  
+You **do not need to re-run** `01_prepare_splits_and_config.ipynb`.
+This notebook was used once to:
+1. Load the dataset  
 2. Add stable `row_id` column  
 3. Create stratified k-fold splits  
 4. Save splits and manifest  
