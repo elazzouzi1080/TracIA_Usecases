@@ -70,8 +70,8 @@ class Config:
     
     # Evaluation metrics
     metrics_list: List[str] = field(default_factory=lambda: [
-        "Brier", "BACC", "MCC", "AUC_ROC", "AUC_PR", 
-        "SE", "PPV", "F1", "SP", "NPV", "ACC"
+        "Brier", "BACC", "MCC", 
+        "SE", "PPV", "SP", "NPV"
     ])
     
     # Model parameters
