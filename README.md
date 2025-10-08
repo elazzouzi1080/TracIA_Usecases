@@ -17,7 +17,7 @@ This pipeline provides a complete framework for evaluating multiple baseline cla
 ### Key Features
 - ✅ **Fixed CV Splits**: Ensures reproducibility across experiments  
 - ✅ **Multiple Baselines**: 9 pre-configured classifiers (LR, SVM, RF, etc.)  
-- ✅ **Comprehensive Metrics**: 11 evaluation metrics including AUC-ROC, F1, MCC  
+- ✅ **Comprehensive Metrics**: 7 evaluation metrics including Brier Score, BACC, MCC  
 - ✅ **Rich Visualizations**: Box plots, ROC curves, confidence intervals  
 - ✅ **Multiple Export Formats**: CSV, JSON, Excel with metadata  
 
