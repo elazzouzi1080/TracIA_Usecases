@@ -188,8 +188,7 @@ class Config:
 - `cv_results_complete.xlsx`: Multi-sheet workbook with metadata  
 
 ### Visualizations
-- `model_comparison_AUC_ROC.png`: AUC-ROC scores across models
-- `model_comparison_F1.png`: F1 scores across models
+- `model_comparison_BACC.png`: BACC scores across models
 - `model_comparison_MCC.png`: MCC scores across models
 
 ### JSON
@@ -198,18 +197,18 @@ class Config:
 
 ---
 
-## 📝 Example Results
+## 📝 Baseline Results
 
 ```
 ================================================================================
-TOP 5 MODELS BY AUC-ROC
+TOP 5 MODELS BY BACC (Balanced Accuracy)
 ================================================================================
-     model      AUC_ROC_mean   AUC_ROC_std   F1_mean   MCC_mean
-     RF         0.901355       0.026516      0.744379  0.639031
-     GB         0.894490       0.012779      0.725710  0.603015
- SVM_linear     0.876203       0.033730      0.661672  0.542740
-     LR         0.875163       0.031707      0.721311  0.607449
-  SVM_rbf       0.860661       0.031572      0.678865  0.550067
+  model  Brier_mean  MCC_mean  BACC_mean  SE_mean  PPV_mean  SP_mean  NPV_mean
+     RF    0.119412  0.639031   0.809618 0.707895  0.790476 0.911341  0.869802
+     GB    0.136438  0.603015   0.797301 0.707895  0.745803 0.886707  0.865909
+     LR    0.133686  0.614685   0.794172 0.677368  0.786093 0.910976  0.856903
+     DT    0.154568  0.538719   0.769702 0.686842  0.683944 0.852561  0.854569
+SVM_rbf    0.141723  0.550067   0.760802 0.625263  0.745873 0.896341  0.834717
 ================================================================================
 ```
 <img width="1200" height="800" alt="image" src="https://github.com/user-attachments/assets/eb4e8aa5-156c-470f-98bb-7715cf33ddab" />
