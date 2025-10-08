@@ -211,6 +211,7 @@ TOP 5 MODELS BY BACC (Balanced Accuracy)
 SVM_rbf    0.141723  0.550067   0.760802 0.625263  0.745873 0.896341  0.834717
 ================================================================================
 ```
-<img width="1200" height="800" alt="image" src="https://github.com/user-attachments/assets/eb4e8aa5-156c-470f-98bb-7715cf33ddab" />
+<img width="1189" height="790" alt="model_comparison_BACC" src="https://github.com/user-attachments/assets/ccac8956-4468-4c50-8a26-6f5e67a0bade" />
 
 ---
+
