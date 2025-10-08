@@ -1,7 +1,7 @@
 """
 Binary Classification with Fixed Cross-Validation Pipeline - 
 
-This script provides a robust, modular pipeline for evaluating multiple baseline 
+This notebook provides a robust, modular pipeline for evaluating multiple baseline 
 classifiers on the Heart Failure Clinical Records dataset using fixed stratified 
 k-fold cross-validation splits.
 
@@ -15,7 +15,7 @@ import json
 import logging
 import warnings
 from pathlib import Path
-from typing import Dict, Any, List, Tuple, Optional, Union
+from typing import Dict, Any, List, Tuple, Optional
 from dataclasses import dataclass, field
 import time
 
@@ -34,10 +34,8 @@ from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import (
-    matthews_corrcoef, accuracy_score, f1_score, recall_score,
-    precision_score, balanced_accuracy_score, roc_auc_score,
-    precision_recall_curve, auc, brier_score_loss, confusion_matrix,
-    classification_report, roc_curve
+    matthews_corrcoef, recall_score, precision_score, 
+    balanced_accuracy_score, brier_score_loss, confusion_matrix
 )
 
 # Visualization imports
@@ -68,10 +66,15 @@ class Config:
     dataset_csv: Path = Path("../data/splits_k5_v1/heart_failure_clinical_records_dataset_with_row_id.csv")
     results_dir: Path = Path("../results_pipline")
     
-    # Evaluation metrics
+    # Evaluation metrics - MÉTRIQUES SÉLECTIONNÉES UNIQUEMENT
     metrics_list: List[str] = field(default_factory=lambda: [
-        "Brier", "BACC", "MCC", 
-        "SE", "PPV", "SP", "NPV"
+        "Brier",  # Brier Score
+        "BACC",   # Balanced Accuracy
+        "MCC",    # Matthews Correlation Coefficient
+        "SE",     # Sensitivity (Recall)
+        "PPV",    # Positive Predictive Value (Precision)
+        "SP",     # Specificity
+        "NPV"     # Negative Predictive Value
     ])
     
     # Model parameters
@@ -154,17 +157,17 @@ class DataLoader:
         return {"train": train_ids, "test": test_ids}
 
 # ============================================================================
-# METRICS CALCULATOR
+# METRICS CALCULATOR - MÉTRIQUES SÉLECTIONNÉES
 # ============================================================================
 
 class MetricsCalculator:
-    """Comprehensive metrics calculation with confidence intervals"""
+    """Calculate selected metrics only: Brier, BACC, MCC, SE, PPV, SP, NPV"""
     
     @staticmethod
     def compute_metrics(y_true: np.ndarray, 
                        y_prob: np.ndarray, 
                        y_pred: np.ndarray) -> Dict[str, float]:
-        """Calculate all evaluation metrics"""
+        """Calculate only the selected evaluation metrics"""
         
         # Clip probabilities to avoid numerical issues
         y_prob = np.clip(y_prob, 1e-12, 1 - 1e-12)
@@ -172,28 +175,16 @@ class MetricsCalculator:
         # Confusion matrix
         tn, fp, fn, tp = confusion_matrix(y_true, y_pred, labels=[0, 1]).ravel()
         
+        # MÉTRIQUES SÉLECTIONNÉES UNIQUEMENT
         metrics = {
             "Brier": brier_score_loss(y_true, y_prob),
             "BACC": balanced_accuracy_score(y_true, y_pred),
             "MCC": matthews_corrcoef(y_true, y_pred),
-            "ACC": accuracy_score(y_true, y_pred),
-            "SE": recall_score(y_true, y_pred, pos_label=1),  # Sensitivity
+            "SE": recall_score(y_true, y_pred, pos_label=1, zero_division=0),  # Sensitivity
             "PPV": precision_score(y_true, y_pred, zero_division=0),  # Precision
-            "F1": f1_score(y_true, y_pred, zero_division=0),
             "SP": tn / (tn + fp) if (tn + fp) > 0 else np.nan,  # Specificity
-            "NPV": tn / (tn + fn) if (tn + fn) > 0 else np.nan,  # NPV
+            "NPV": tn / (tn + fn) if (tn + fn) > 0 else np.nan,  # Negative Predictive Value
         }
-        
-        # ROC-AUC with error handling
-        try:
-            metrics["AUC_ROC"] = roc_auc_score(y_true, y_prob)
-        except Exception as e:
-            logger.warning(f"Could not calculate AUC-ROC: {e}")
-            metrics["AUC_ROC"] = np.nan
-        
-        # PR-AUC
-        precision_vals, recall_vals, _ = precision_recall_curve(y_true, y_prob)
-        metrics["AUC_PR"] = auc(recall_vals, precision_vals)
         
         return metrics
     
@@ -232,7 +223,7 @@ class ModelFactory:
                 ("clf", LogisticRegression(
                     max_iter=1000, 
                     random_state=random_state,
-                    solver='liblinear'   
+                    solver='liblinear'
                 ))
             ]),
             
@@ -242,7 +233,7 @@ class ModelFactory:
                     kernel="linear", 
                     probability=True, 
                     random_state=random_state,
-                    class_weight='balanced'   
+                    class_weight='balanced'
                 ))
             ]),
             
@@ -260,14 +251,14 @@ class ModelFactory:
                 ("scaler", StandardScaler()),
                 ("clf", KNeighborsClassifier(
                     n_neighbors=5,
-                    weights='distance',  # 
+                    weights='distance',
                     n_jobs=n_jobs
                 ))
             ]),
             
             "DT": DecisionTreeClassifier(
                 random_state=random_state,
-                max_depth=5,  # Prevent overfitting
+                max_depth=5,
                 min_samples_split=10,
                 min_samples_leaf=5
             ),
@@ -489,14 +480,19 @@ class ResultsAnalyzer:
         
         summary_df = pd.DataFrame(summary_stats)
         
-        # Sort by primary metric (e.g., AUC-ROC)
-        summary_df = summary_df.sort_values('AUC_ROC_mean', ascending=False)
+        # Sort by MCC (primary metric for selected metrics)
+        if 'MCC_mean' in summary_df.columns:
+            summary_df = summary_df.sort_values('MCC_mean', ascending=False)
         
         return summary_df
     
     def plot_model_comparison(self, results_df: pd.DataFrame, 
-                             metric: str = "AUC_ROC"):
+                             metric: str = "MCC"):
         """Create box plot comparing models"""
+        
+        if metric not in results_df.columns:
+            logger.warning(f"Metric {metric} not found in results")
+            return
         
         plt.figure(figsize=self.config.fig_size)
         
@@ -505,7 +501,7 @@ class ResultsAnalyzer:
         
         # Create box plot
         sns.boxplot(data=plot_data, x='model', y=metric)
-        plt.xticks(rotation=45)
+        plt.xticks(rotation=45, ha='right')
         plt.title(f'Model Comparison - {metric}')
         plt.xlabel('Model')
         plt.ylabel(metric)
@@ -513,40 +509,13 @@ class ResultsAnalyzer:
         
         # Save figure
         save_path = self.config.results_dir / "figures" / f"model_comparison_{metric}.png"
-        plt.savefig(save_path, dpi=self.config.dpi)
+        plt.savefig(save_path, dpi=self.config.dpi, bbox_inches='tight')
         plt.show()
         
         logger.info(f"Figure saved: {save_path}")
     
-    def plot_roc_curves(self, X_test, y_test, models):
-        """Plot ROC curves for all models"""
-        
-        plt.figure(figsize=self.config.fig_size)
-        
-        for model_name, model in models.items():
-            if hasattr(model, "predict_proba"):
-                y_prob = model.predict_proba(X_test)[:, 1]
-                fpr, tpr, _ = roc_curve(y_test, y_prob)
-                auc_score = auc(fpr, tpr)
-                plt.plot(fpr, tpr, label=f'{model_name} (AUC = {auc_score:.3f})')
-        
-        plt.plot([0, 1], [0, 1], 'k--', label='Random')
-        plt.xlim([0.0, 1.0])
-        plt.ylim([0.0, 1.05])
-        plt.xlabel('False Positive Rate')
-        plt.ylabel('True Positive Rate')
-        plt.title('ROC Curves Comparison')
-        plt.legend(loc="lower right")
-        plt.grid(True, alpha=0.3)
-        plt.tight_layout()
-        
-        # Save figure
-        save_path = self.config.results_dir / "figures" / "roc_curves.png"
-        plt.savefig(save_path, dpi=self.config.dpi)
-        plt.show()
-    
     def perform_statistical_tests(self, results_df: pd.DataFrame, 
-                                  metric: str = "AUC_ROC") -> pd.DataFrame:
+                                  metric: str = "MCC") -> pd.DataFrame:
         """Perform pairwise statistical tests between models"""
         
         models = results_df['model'].unique()
@@ -554,20 +523,24 @@ class ResultsAnalyzer:
         
         for i, model1 in enumerate(models):
             for model2 in models[i+1:]:
-                scores1 = results_df[results_df['model'] == model1][metric].values
-                scores2 = results_df[results_df['model'] == model2][metric].values
+                scores1 = results_df[results_df['model'] == model1][metric].dropna().values
+                scores2 = results_df[results_df['model'] == model2][metric].dropna().values
                 
-                # Wilcoxon signed-rank test
-                statistic, p_value = stats.wilcoxon(scores1, scores2)
-                
-                test_results.append({
-                    'model1': model1,
-                    'model2': model2,
-                    'metric': metric,
-                    'statistic': statistic,
-                    'p_value': p_value,
-                    'significant': p_value < 0.05
-                })
+                if len(scores1) > 0 and len(scores2) > 0:
+                    try:
+                        # Wilcoxon signed-rank test
+                        statistic, p_value = stats.wilcoxon(scores1, scores2)
+                        
+                        test_results.append({
+                            'model1': model1,
+                            'model2': model2,
+                            'metric': metric,
+                            'statistic': statistic,
+                            'p_value': p_value,
+                            'significant': p_value < 0.05
+                        })
+                    except Exception as e:
+                        logger.warning(f"Could not perform test for {model1} vs {model2}: {e}")
         
         return pd.DataFrame(test_results)
 
@@ -588,6 +561,7 @@ class BinaryClassificationPipeline:
         
         logger.info("=" * 60)
         logger.info("Starting Binary Classification Pipeline")
+        logger.info(f"Selected Metrics: {', '.join(self.config.metrics_list)}")
         logger.info("=" * 60)
         
         # Run evaluation
@@ -601,18 +575,20 @@ class BinaryClassificationPipeline:
         # Save results
         self._save_results(results_df, summary_df)
         
-        # Create visualizations
+        # Create visualizations for selected metrics
         logger.info("Creating visualizations...")
-        for metric in ['AUC_ROC', 'F1', 'MCC']:
-            self.analyzer.plot_model_comparison(results_df, metric)
+        for metric in ['BACC', 'MCC']:
+            if metric in results_df.columns:
+                self.analyzer.plot_model_comparison(results_df, metric)
         
-        # Statistical tests
-        logger.info("Performing statistical tests...")
-        stat_tests = self.analyzer.perform_statistical_tests(results_df)
-        stat_tests.to_csv(
-            self.config.results_dir / "statistical_tests.csv", 
-            index=False
-        )
+        # # Statistical tests
+        # logger.info("Performing statistical tests...")
+        # stat_tests = self.analyzer.perform_statistical_tests(results_df, metric='MCC')
+        # if not stat_tests.empty:
+        #     stat_tests.to_csv(
+        #         self.config.results_dir / "statistical_tests.csv", 
+        #         index=False
+        #     )
         
         # Print summary
         self._print_summary(summary_df)
@@ -655,12 +631,13 @@ class BinaryClassificationPipeline:
             
             # Add metadata sheet
             metadata = pd.DataFrame({
-                'Parameter': ['Date', 'N_folds', 'N_models', 'Dataset'],
+                'Parameter': ['Date', 'N_folds', 'N_models', 'Dataset', 'Metrics'],
                 'Value': [
                     pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S'),
                     results_df['fold'].nunique(),
                     results_df['model'].nunique(),
-                    str(self.config.dataset_csv)
+                    str(self.config.dataset_csv),
+                    ', '.join(self.config.metrics_list)
                 ]
             })
             metadata.to_excel(writer, sheet_name='Metadata', index=False)
@@ -671,12 +648,14 @@ class BinaryClassificationPipeline:
         """Print formatted summary to console"""
         
         print("\n" + "=" * 80)
-        print("TOP 5 MODELS BY AUC-ROC")
+        print("TOP 5 MODELS BY BACC (Balanced Accuracy)")
         print("=" * 80)
+
+        # Select columns to display
+        display_cols = ['model', 'Brier_mean', 'MCC_mean', 'BACC_mean', 'SE_mean','PPV_mean', 'SP_mean','NPV_mean']
+        available_cols = [col for col in display_cols if col in summary_df.columns]
         
-        top_models = summary_df.nlargest(5, 'AUC_ROC_mean')[
-            ['model', 'AUC_ROC_mean', 'AUC_ROC_std', 'F1_mean', 'MCC_mean']
-        ]
+        top_models = summary_df.nlargest(5, 'BACC_mean')[available_cols]
         
         print(top_models.to_string(index=False))
         print("=" * 80)
@@ -692,3 +671,4 @@ if __name__ == "__main__":
     
     print("\nPipeline execution completed successfully!")
     print(f"Results saved in: {pipeline.config.results_dir}")
+    print(f"\nMetrics evaluated: {', '.join(pipeline.config.metrics_list)}")
