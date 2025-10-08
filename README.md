@@ -120,19 +120,44 @@ Or use the provided notebook: `02_run_binary_classification_pipeline.ipynb`
 
 ## 📈 Evaluation Metrics
 
-The pipeline computes **11 metrics**:
+In binary classification, relying on a single metric is insufficient to properly evaluate model performance. As highlighted by **Poiron et al. (2025)**, two main dimensions must be considered to ensure a comprehensive evaluation: **calibration** and **discrimination**.  
 
-- Brier: Brier score (calibration)  
-- BACC: Balanced accuracy  
-- MCC: Matthews Correlation Coefficient  
-- AUC_ROC: Area Under ROC Curve  
-- AUC_PR: Area Under Precision-Recall Curve  
-- SE: Sensitivity (Recall)  
-- PPV: Positive Predictive Value (Precision)  
-- F1: F1 Score  
-- SP: Specificity  
-- NPV: Negative Predictive Value  
-- ACC: Accuracy  
+- **Calibration** refers to the agreement between the predicted probabilities and the actual distribution of the observed phenomenon. A well-calibrated model produces risk estimates that closely match observed event rates.  
+- **Discrimination** corresponds to the model’s ability to correctly separate the two classes (e.g., healthy/sick individuals, event/no-event). It is generally measured using the confusion matrix, once a decision threshold has been applied to the predicted probabilities.  
+
+In this framework:  
+- Some metrics focus only on the **positive class** (e.g., sensitivity),  
+- Others focus on the **negative class** (e.g., specificity),  
+- And some are **global metrics** that simultaneously evaluate both classes (e.g., balanced accuracy – BACC).  
+
+Moreover, performance can be measured using:  
+- **Intrinsic metrics**, independent of prevalence and context (e.g., sensitivity, specificity, BACC),  
+- **Prevalence-dependent metrics**, which reflect model performance in a specific operational setting (e.g., PPV, NPV, MCC).  
+
+Based on these principles, and following the categorization proposed by **Poiron et al. (2025)**, we retained four main categories of metrics in our pipeline:  
+
+1. Calibration  
+2. Global discrimination  
+3. Positive-class discrimination  
+4. Negative-class discrimination  
+
+Discrimination metrics were further subdivided according to whether they depend on prevalence. The table below summarizes these categories and the selected metrics.  
+
+---
+
+## 📋 Summary Table of Metrics
+
+| **Category**              | **Subcategory**                   | **Metric** | **Definition** | **Formula** |
+|----------------------------|-----------------------------------|-------------|----------------|-------------|
+| **Calibration**            | Quantitative                      | Brier Score | Accuracy of predicted probabilities vs. observed outcomes. | $Brier = \frac{1}{N} \sum_{i=1}^N (p_i - y_i)^2$ |
+|                            | Graphical                         | Calibration curves | Visual comparison of predicted vs. observed risks. | Graph |
+| **Discrimination (positive)** | Prevalence-independent         | Sensitivity (SE, Recall, TPR) | Proportion of positive cases correctly detected. | $SE = \frac{TP}{TP + FN}$ |
+|                            | Prevalence-dependent              | PPV (Positive Predictive Value, Precision) | Proportion of predicted positives that are truly positive. | $PPV = \frac{TP}{TP + FP}$ |
+| **Discrimination (negative)** | Prevalence-independent         | Specificity (SP, TNR) | Proportion of negative cases correctly detected. | $SP = \frac{TN}{TN + FP}$ |
+|                            | Prevalence-dependent              | NPV (Negative Predictive Value) | Proportion of predicted negatives that are truly negative. | $NPV = \frac{TN}{TN + FN}$ |
+| **Discrimination (global)**   | Prevalence-independent         | Balanced Accuracy (BACC) | Average of sensitivity and specificity. | $BACC = \frac{SE + SP}{2}$ |
+|                            | Prevalence-dependent              | MCC (Matthews Correlation Coefficient) | Correlation between predictions and ground truth. | $MCC = \frac{TP \times TN - FP \times FN}{\sqrt{(TP+FP)(TP+FN)(TN+FP)(TN+FN)}}$ |
+ 
 
 ---
 
