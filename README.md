@@ -150,12 +150,12 @@ Discrimination metrics were further subdivided according to whether they depend 
 | **Category**              | **Subcategory**                   | **Metric** | **Definition** | **Formula** |
 |----------------------------|-----------------------------------|-------------|----------------|-------------|
 | **Calibration**            | Quantitative                      | Brier Score | Accuracy of predicted probabilities vs. observed outcomes. | $Brier = \frac{1}{N} \sum_{i=1}^N (p_i - y_i)^2$ |
-|                            | Graphical                         | Calibration curves | Visual comparison of predicted vs. observed risks. | Graph |
-| **Discrimination (positive)** | Prevalence-independent         | Sensitivity (SE, Recall, TPR) | Proportion of positive cases correctly detected. | $SE = \frac{TP}{TP + FN}$ |
-|                            | Prevalence-dependent              | PPV (Positive Predictive Value, Precision) | Proportion of predicted positives that are truly positive. | $PPV = \frac{TP}{TP + FP}$ |
-| **Discrimination (negative)** | Prevalence-independent         | Specificity (SP, TNR) | Proportion of negative cases correctly detected. | $SP = \frac{TN}{TN + FP}$ |
-|                            | Prevalence-dependent              | NPV (Negative Predictive Value) | Proportion of predicted negatives that are truly negative. | $NPV = \frac{TN}{TN + FN}$ |
-| **Discrimination (global)**   | Prevalence-independent         | Balanced Accuracy (BACC) | Average of sensitivity and specificity. | $BACC = \frac{SE + SP}{2}$ |
+|                            | Graphical                         | Calibration curves | Visual comparison of predicted vs. observed outcomes. | Graph |
+| **Discrimination (positive)** | Prevalence-independent         | Sensitivity (SE) | Rate of positive samples correctly classified. | $SE = \frac{TP}{TP + FN}$ |
+|                            | Prevalence-dependent              | PPV (Positive Predictive Value, Precision) | Ratio between correctly classified positive samples and all samples classified as positive. | $PPV = \frac{TP}{TP + FP}$ |
+| **Discrimination (negative)** | Prevalence-independent         | Specificity (SP) | Rate of negative samples correctly classified. | $SP = \frac{TN}{TN + FP}$ |
+|                            | Prevalence-dependent              | NPV (Negative Predictive Value) | Ratio between correctly classified negative samples and all samples classified as negative. | $NPV = \frac{TN}{TN + FN}$ |
+| **Discrimination (global)**   | Prevalence-independent         | Balanced Accuracy (BACC) | Arithmetic average of sensitivity and specificity. | $BACC = \frac{SE + SP}{2}$ |
 |                            | Prevalence-dependent              | MCC (Matthews Correlation Coefficient) | Correlation between predictions and ground truth. | $MCC = \frac{TP \times TN - FP \times FN}{\sqrt{(TP+FP)(TP+FN)(TN+FP)(TN+FN)}}$ |
  
 
